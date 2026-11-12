@@ -47,7 +47,7 @@
     "@puppeteer/browsers": "^2.13.0",
     "acorn": "^8.14.0",
     "chrome-launcher": "^1.1.2",
-    "lighthouse": "^12.8.2",
+    "lighthouse": "^13.6.0",
     "third-party-web": "^0.27.0"
   },
   "devDependencies": {
