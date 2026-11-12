@@ -414,6 +414,17 @@ npm run test       # vitest
 - `npm run build` は `tsconfig.build.json`（テストを配布物から除外）、`npm run typecheck` は
   テストも含めて型検査する
 
+### 依存の固定（overrides）と残っている脆弱性（2026-11-12）
+
+- `overrides` で `basic-ftp` を `^6.2.6` に上げている。`@puppeteer/browsers` 2.x → `proxy-agent` 6 →
+  `get-uri` 6 が `basic-ftp` 5 を要求するが、5.x に修正版が無いため（GHSA の修正は 6.2.1 以降）。
+  `get-uri` が使う API（`Client` / `access` / `lastMod` / `list` / `downloadTo` / `close`）は 6 でも同じ。
+  `@puppeteer/browsers` を 3 に上げたら外してよい
+- `extract-zip`（修正版なし）と `zod` 3（chromium-bidi 14 経由）は残している。消すには
+  `@puppeteer/browsers` 3 と `lighthouse` 13 が要り、どちらも Node 22 以上を要求する。
+  さらに lighthouse 13 は `mainthread-work-breakdown` などの監査を廃止しており、ablate の CPU 計算が変わる
+- `vitest` 4 は Node 20 でも動く最後の系列（5 は Node 22.12 以上）
+
 ---
 
 ## ライセンス
