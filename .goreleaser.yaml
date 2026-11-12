@@ -6,6 +6,10 @@ version: 2
 
 project_name: third-party-analyzer
 
+# `npm ci` runs the `prepare` script (tsc → dist/), so GoReleaser must not use
+# dist/ as its output directory (it refuses a non-empty dist).
+dist: release-dist
+
 before:
   hooks:
     - npm ci

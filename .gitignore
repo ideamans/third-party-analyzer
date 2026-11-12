@@ -4,3 +4,4 @@ third-party-analyzer
 runs/
 *.log
 .DS_Store
+release-dist/
