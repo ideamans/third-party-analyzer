@@ -354,8 +354,9 @@ console.log(result.deltas.find((d) => d.metric === 'tbtMs'))
 ### CI / リリース（GitHub Actions）
 - **test**（`main`/`develop` への push・PR）: 型チェック・vitest・ビルド＋単一バイナリのコンパイルスモーク
 - **release**（`v*` タグ push）: **GoReleaser のネイティブ `bun` ビルダー**で
-  5ターゲット（linux/darwin × amd64/arm64、windows x64）を `bun build --compile` し、
+  4ターゲット（linux amd64/arm64、darwin arm64、windows x64）を `bun build --compile` し、
   アーカイブ・チェックサム・GitHub Release を自動生成（`.goreleaser.yaml`）
+- Intel Mac（darwin amd64）向けのバイナリは v0.1.2 で配布を終了しました（Apple Silicon のみ）
 - リリースバイナリは `analyze` 用途。`capture` は Bun/Node 実行（Chrome 自動DL）を利用
 
 ## 設計
