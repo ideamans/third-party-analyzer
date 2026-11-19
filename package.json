@@ -58,6 +58,8 @@
     "vitest": "^4.1.12"
   },
   "overrides": {
-    "basic-ftp": "^6.2.6"
+    "basic-ftp": "^6.2.6",
+    "@sentry/node": "^10.78.0",
+    "zod": "^4.6.6"
   }
 }

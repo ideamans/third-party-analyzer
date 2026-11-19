@@ -421,15 +421,27 @@ npm run test:smoke # 実際の Chrome と Lighthouse で capture → analyze を
 - `npm run build` は `tsconfig.build.json`（テストを配布物から除外）、`npm run typecheck` は
   テストも含めて型検査する
 
-### 依存の固定（overrides）と残っている脆弱性（2026-11-12）
+### 依存の固定（overrides）と残っている脆弱性（2026-11-20）
 
 - `overrides` で `basic-ftp` を `^6.2.6` に上げている。`@puppeteer/browsers` 2.x → `proxy-agent` 6 →
   `get-uri` 6 が `basic-ftp` 5 を要求するが、5.x に修正版が無いため（GHSA の修正は 6.2.1 以降）。
   `get-uri` が使う API（`Client` / `access` / `lastMod` / `list` / `downloadTo` / `close`）は 6 でも同じ。
   `@puppeteer/browsers` を 3 に上げたら外してよい
-- `extract-zip`（修正版なし）と `zod` 3（chromium-bidi 14 経由）は残している。消すには
-  `@puppeteer/browsers` 3 と `lighthouse` 13 が要り、どちらも Node 22 以上を要求する。
-  さらに lighthouse 13 は `mainthread-work-breakdown` などの監査を廃止しており、ablate の CPU 計算が変わる
+- `overrides` で `@sentry/node` を `^10.78.0` に上げている。lighthouse 12 は `@sentry/node` 9 を要求し、
+  その下の `@opentelemetry/*`（core・instrumentation-pg ほか）と `minimatch` に修正版が無い。
+  lighthouse は Sentry をエラー報告を有効にしたときだけ動的に読み込み（このツールは有効にしない）、
+  使う API（`init` / `setTags` / `setExtras` / `captureMessage` / `addBreadcrumb` / `withScope` /
+  `captureException`）は 10 でも同じ
+- `overrides` で `zod` を `^4.6.6` に上げている。`puppeteer-core` 24 → `chromium-bidi` 14 が zod 3 を要求するが、
+  修正版は 4.6.6 以降にしか無い。chromium-bidi は WebDriver BiDi で接続したときだけ読み込まれ、
+  lighthouse は CDP で接続するので通らない（zod 4 でもプロトコルの解析が動くことは確認済み）
+- **lighthouse 13 には上げていない。** Node 22.19 以上を要求するうえ、アナライザが読む監査
+  （`third-party-summary` `render-blocking-resources` `largest-contentful-paint-element`
+  `prioritize-lcp-image` `critical-request-chains` `third-party-facades`）が無くなり、型検査と単体テストは
+  通ったままタグの CPU が 0、LCP のフェーズが空になる（`npm run test:smoke` で検出できる）。
+  上げるならアナライザを insight 系の監査へ移すのが先。上げたら `@sentry/node` と `zod` の overrides は外してよい
+- `extract-zip`（修正版なし）は残している。消すには `@puppeteer/browsers` 3（Node 22 以上）と、
+  `puppeteer-core` 経由の分は lighthouse 13 が要る
 - `vitest` 4 は Node 20 でも動く最後の系列（5 は Node 22.12 以上）
 
 ---
