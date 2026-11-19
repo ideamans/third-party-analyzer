@@ -21,6 +21,21 @@ jobs:
       - run: npm test
       - run: npm run build
 
+  capture-smoke:
+    name: capture → analyze smoke (real Lighthouse)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # Runs Lighthouse against two local servers (1st / 3rd party) with the
+      # runner's preinstalled Chrome, then runs each analyzer on the result.
+      # Catches Lighthouse upgrades that drop audits the analyzers read.
+      - run: npm run test:smoke
+
   binary-smoke:
     name: bun build --compile smoke
     runs-on: ubuntu-latest

@@ -352,7 +352,7 @@ console.log(result.deltas.find((d) => d.metric === 'tbtMs'))
 > まとめ: 解析は「単一バイナリ or Bun/Node」、計測・実験は「Bun/Node（+自動Chrome）」。
 
 ### CI / リリース（GitHub Actions）
-- **test**（`main`/`develop` への push・PR）: 型チェック・vitest・ビルド＋単一バイナリのコンパイルスモーク
+- **test**（`main`/`develop` への push・PR）: 型チェック・vitest・ビルド、実際の Lighthouse で capture → analyze を通すスモーク（`test:smoke`）、単一バイナリのコンパイルスモーク
 - **release**（`v*` タグ push）: **GoReleaser のネイティブ `bun` ビルダー**で
   4ターゲット（linux amd64/arm64、darwin arm64、windows x64）を `bun build --compile` し、
   アーカイブ・チェックサム・GitHub Release を自動生成（`.goreleaser.yaml`）
@@ -408,8 +408,14 @@ src/
 npm run dev        # tsx で CLI 実行（例: npm run dev -- capture <URL> --out ...）
 npm run build      # TypeScript ビルド（dist/）
 npm run typecheck  # 型チェックのみ
-npm run test       # vitest
+npm run test       # vitest（単体テスト。保存済みの成果物が相手で、Chrome は要らない）
+npm run test:smoke # 実際の Chrome と Lighthouse で capture → analyze を1回通す（十数秒）
 ```
+
+- `test:smoke`（`test/smoke/`）は手元に 1st party（127.0.0.1）と 3rd party（localhost）の
+  サーバーを立てて計測し、アナライザが読む Lighthouse の監査が揃っているか・タグの CPU と
+  LCP のフェーズが取れるかを確かめる。外部には通信しない。**Lighthouse を上げるときは必ず通す**
+  （単体テストと型検査は、監査が消えても通ってしまう）
 
 - TypeScript（ESM, NodeNext）、Prettier 準拠（シングルクォート・セミコロンなし・120桁）
 - `npm run build` は `tsconfig.build.json`（テストを配布物から除外）、`npm run typecheck` は
